@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<div class="row row=cols-1 row-cols-md-3 g-4">
+<div class="row row=cols-1 row-cols-md-3 g-4 mt-3">
     @{ foreach (var item in Model)
         {
             <div class="col">
@@ -23,11 +23,29 @@
                     <img src="../images/128.png" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">@item.Name</h5>
-                        <p class="card-text"> Доступно: @item.Count шт.</p>
-                        <button class="btn btn-primary">@item.Price р.</button>
+                        <p class="card-text" id="count-@item.Id"> Доступно: @item.Count шт.</p>
+                        <button class="btn btn-primary" disabled="@(!item.Available)" id="button-@item.Id">@item.Price р.</button>
                     </div>
                 </div>
             </div>
+            <script>
+                    $("#button-@item.Id").click(function () {
+                        $.ajax({
+                            method: 'POST',
+                            url: '/Home/BuyDrink',
+                            data: { drink_id: @item.Id },
+                            success: function (data) {
+                                if (@(!item.Available)) {
+                                    $("#button-@item.Id").prop('disabled', 'true');
+
+                                } else {
+                                    $("#button-@item.Id").prop('disabled', 'false');
+                                }
+                                $("#count-@item.Id").text(`Доступно: ${data.Count} шт.`);
+                            }
+                        })
+                    })
+            </script>
         }
     }
 </div>

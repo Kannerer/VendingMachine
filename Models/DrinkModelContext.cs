@@ -9,5 +9,11 @@ namespace VendingMachine.Models
     public class DrinkModelContext : DbContext
     {
         public DbSet<DrinkModel> DrinkModel { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            Database.SetInitializer<DrinkModelContext>(null);
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
