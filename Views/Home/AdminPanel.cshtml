@@ -28,15 +28,45 @@
     <div class="row row=cols-1 row-cols-md-3 g-4 mt-3">
         @{ foreach (var item in Model)
             {
-                <div class="col">
+                <div class="col mb-3">
                     <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Name</h5>
-                            <p class="card-text"> Доступно: @item.Count шт.</p>
-                            <p class="card-text"> Цена: @item.Price шт.</p>
-                            <button class="btn btn-outline-warning">Обновить</button>
-                            <button class="btn btn-outline-danger">Удалить</button>
-                        </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Напиток ID @item.Id</h5>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="input1">Название</span>
+                                        <input type="text" class="form-control" id="input-name-@item.Id" value=@item.Name aria-describedby="input1" required>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="input2">Цена</span>
+                                        <input type="number" class="form-control" id="input-price-@item.Id" value=@item.Price aria-describedby="input2" required>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" id="input3">Количество</span>
+                                        <input type="number" class="form-control" id="input-count-@item.Id" value=@item.Count aria-describedby="input3" required>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
+                                        <label class="form-check-label" for="inlineCheckbox1">Напиток доступен</label>
+                                    </div>
+                                    <div class="input-group mb-3">
+                                        <label for="input4">Изображение</label>
+                                        <input type="file" id="input-image-@item.Id">
+                                    </div>
+                                    <button class="btn btn-warning" id="update-@item.Id">Обновить</button>
+                                    <button class="btn btn-danger">Удалить</button>
+                                    <script>
+                                        $("#update-@item.Id").click(function () {
+                                            $.ajax({
+                                                method: 'POST',
+                                                url: '/Home/UpdateDrink',
+                                                data: { drink_id: @item.Id },
+                                                success: function (data) {
+
+                                                }
+                                            })
+                                        })
+                                    </script>
+                                </div>
                     </div>
                 </div>
             }
@@ -57,12 +87,16 @@
                     <span class="input-group-text" id="input3">Количество</span>
                     <input type="number" class="form-control" id="input-name" aria-describedby="input3" required>
                 </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
+                    <label class="form-check-label" for="inlineCheckbox1">Напиток доступен</label>
+                </div>
                 <div class="input-group mb-3">
                     <label for="input4">Изображение</label>
                     <input type="file" id="input4">
                 </div>
 
-                <button class="btn btn-outline-warning">Добавить</button>
+                <button class="btn btn-warning">Добавить</button>
             </div>
         </div>
     </div>

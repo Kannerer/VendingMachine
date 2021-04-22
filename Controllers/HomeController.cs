@@ -31,5 +31,18 @@ namespace VendingMachine.Controllers
             Context.SaveChanges();
             return Json(drink);
         }
+
+        [HttpPost]
+        public ActionResult UpdateDrink(int drink_id)
+        {
+            var drink = Context.DrinkModel.Where(d => d.Id == drink_id).FirstOrDefault();
+
+            if (drink.Count <= 0)
+            {
+                drink.Available = false;
+            }
+            Context.SaveChanges();
+            return Json(drink);
+        }
     }
 }
