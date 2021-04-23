@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -33,12 +34,29 @@ namespace VendingMachine.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateDrink(int drink_id, string new_name, int new_price, int new_count, bool new_available, string new_image)
+        public ActionResult UpdateDrink(int drink_id, string new_name, int new_price, int new_count, bool new_available)
         {
             var drink = Context.DrinkModel.Where(d => d.Id == drink_id).FirstOrDefault();
+            
+            drink.Name = new_name;
+            drink.Price = new_price;
+            drink.Count = new_count;
+            drink.Available = new_available;
 
             Context.SaveChanges();
             return Json(drink);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateDrinkImage()
+        {
+            HttpPostedFileBase file = Request.Files[0];
+            string fname = file.FileName;
+            fname = Path.Combine(Server.MapPath("~/Images/"), fname);
+            file.SaveAs(fname);
+
+            return Json("File Uploaded Successfully!");
+
         }
     }
 }
