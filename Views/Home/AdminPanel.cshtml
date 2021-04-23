@@ -57,7 +57,12 @@
                                     <script>
                                         $("#update-@item.Id").click(function () {
                                             var image = new FormData();
-                                            image.append("file0", $("#image-@item.Id").prop('files')[0])
+                                            image.append("file", $("#image-@item.Id").prop('files')[0])
+                                            $.ajax({
+                                                method: 'POST',
+                                                url: '/Home/UpdateDrinkImage',
+                                                data: image
+                                            })
                                             $.ajax({
                                                 method: 'POST',
                                                 url: '/Home/UpdateDrink',
@@ -66,8 +71,7 @@
                                                     new_name: $("#name-@item.Id").val(),
                                                     new_price: $("#price-@item.Id").val(),
                                                     new_count: $("#count-@item.Id").val(),
-                                                    new_available: $("#available-@item.Id").is(":checked"),
-                                                    new_image: image
+                                                    new_available: $("#available-@item.Id").is(":checked")
                                                 },
                                                 success: function (data) {
 
