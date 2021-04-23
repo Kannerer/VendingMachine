@@ -34,32 +34,41 @@
                                     <h5 class="card-title">Напиток ID @item.Id</h5>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="input1">Название</span>
-                                        <input type="text" class="form-control" id="input-name-@item.Id" value=@item.Name aria-describedby="input1" required>
+                                        <input type="text" class="form-control" id="name-@item.Id" value=@item.Name aria-describedby="input1" required>
                                     </div>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="input2">Цена</span>
-                                        <input type="number" class="form-control" id="input-price-@item.Id" value=@item.Price aria-describedby="input2" required>
+                                        <input type="number" class="form-control" id="price-@item.Id" value=@item.Price aria-describedby="input2" required>
                                     </div>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="input3">Количество</span>
-                                        <input type="number" class="form-control" id="input-count-@item.Id" value=@item.Count aria-describedby="input3" required>
+                                        <input type="number" class="form-control" id="count-@item.Id" value=@item.Count aria-describedby="input3" required>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
-                                        <label class="form-check-label" for="inlineCheckbox1">Напиток доступен</label>
+                                        <input class="form-check-input" type="checkbox" id="available-@item.Id" value="option1" checked>
+                                        <label class="form-check-label" for="available-@item.Id">Напиток доступен</label>
                                     </div>
                                     <div class="input-group mb-3">
                                         <label for="input4">Изображение</label>
-                                        <input type="file" id="input-image-@item.Id">
+                                        <input type="file" id="image-@item.Id">
                                     </div>
                                     <button class="btn btn-warning" id="update-@item.Id">Обновить</button>
                                     <button class="btn btn-danger">Удалить</button>
                                     <script>
                                         $("#update-@item.Id").click(function () {
+                                            var image = new FormData();
+                                            image.append("file0", $("#image-@item.Id").prop('files')[0])
                                             $.ajax({
                                                 method: 'POST',
                                                 url: '/Home/UpdateDrink',
-                                                data: { drink_id: @item.Id },
+                                                data: {
+                                                    drink_id: @item.Id,
+                                                    new_name: $("#name-@item.Id").val(),
+                                                    new_price: $("#price-@item.Id").val(),
+                                                    new_count: $("#count-@item.Id").val(),
+                                                    new_available: $("#available-@item.Id").is(":checked"),
+                                                    new_image: image
+                                                },
                                                 success: function (data) {
 
                                                 }

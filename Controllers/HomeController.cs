@@ -33,14 +33,10 @@ namespace VendingMachine.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateDrink(int drink_id)
+        public ActionResult UpdateDrink(int drink_id, string new_name, int new_price, int new_count, bool new_available, string new_image)
         {
             var drink = Context.DrinkModel.Where(d => d.Id == drink_id).FirstOrDefault();
 
-            if (drink.Count <= 0)
-            {
-                drink.Available = false;
-            }
             Context.SaveChanges();
             return Json(drink);
         }
