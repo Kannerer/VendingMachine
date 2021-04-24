@@ -58,5 +58,14 @@ namespace VendingMachine.Controllers
             return Json("File Uploaded Successfully!");
 
         }
+
+        [HttpPost]
+        public ActionResult DeleteDrink(int drink_id)
+        {
+            var drink = Context.DrinkModel.Where(d => d.Id == drink_id).FirstOrDefault();
+            Context.DrinkModel.Remove(drink);
+            Context.SaveChanges();
+            return Json("Drink deleted");
+        }
     }
 }

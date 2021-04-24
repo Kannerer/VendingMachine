@@ -28,20 +28,20 @@
 <div class="row row=cols-1 row-cols-md-3 g-4 mt-3">
     @{ foreach (var item in Model)
         {
-            <div class="col mb-3">
+            <div class="col mb-3" id="card-@item.Id">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title">Напиток ID @item.Id</h5>
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="input1">Название</span>
+                            <span class="input-group-text" id="input-@item.Id-1">Название</span>
                             <input type="text" class="form-control" id="name-@item.Id" value=@item.Name aria-describedby="input1" required>
                         </div>
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="input2">Цена</span>
+                            <span class="input-group-text" id="input-@item.Id-2">Цена</span>
                             <input type="number" class="form-control" id="price-@item.Id" value=@item.Price aria-describedby="input2" required>
                         </div>
                         <div class="input-group mb-3">
-                            <span class="input-group-text" id="input3">Количество</span>
+                            <span class="input-group-text" id="input-@item.Id-3">Количество</span>
                             <input type="number" class="form-control" id="count-@item.Id" value=@item.Count aria-describedby="input3" required>
                         </div>
                         <div class="form-check form-check-inline">
@@ -53,8 +53,20 @@
                             <input type="file" id="image-@item.Id">
                         </div>
                         <button class="btn btn-warning" id="update-@item.Id">Обновить</button>
-                        <button class="btn btn-danger">Удалить</button>
+                        <button class="btn btn-danger" id="delete-@item.Id">Удалить</button>
                         <script>
+                            $("#delete-@item.Id").click(function () {
+                                $.ajax({
+                                    method: 'POST',
+                                    url: '/Home/DeleteDrink',
+                                    data: {
+                                        drink_id: @item.Id
+                                    },
+                                    success: function (data) {
+                                        //$("#card-@item.Id").remove()
+                                    }
+                                })
+                            })
                             $("#update-@item.Id").click(function () {
                                 $("#update-@item.Id").attr("disabled", true)
                                 $.ajax({
