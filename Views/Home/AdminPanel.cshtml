@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VendingMachine.Models.DrinkModel>
+﻿
 @{
     ViewBag.Title = "Панель управления";
 }
@@ -26,7 +26,7 @@
     </div>
 </div>
 <div class="row row=cols-1 row-cols-md-3 g-4 mt-3">
-    @{ foreach (var item in Model)
+    @{ foreach (var item in ViewBag.Drink)
         {
             <div class="col mb-3" id="card-@item.Id">
                 <div class="card" style="width: 18rem;">
@@ -63,39 +63,34 @@
                                         drink_id: @item.Id
                                     },
                                     success: function (data) {
-                                        //$("#card-@item.Id").remove()
+                                        $("#card-@item.Id").remove()
                                     }
                                 })
                             })
                             $("#update-@item.Id").click(function () {
                                 $("#update-@item.Id").attr("disabled", true)
+                                var data = new FormData();
+                                if ($("#image-@item.Id").prop('files')[0]) {
+                                    data.append("image", $("#image-@item.Id").prop('files')[0])
+                                }
+                                data.append("id", @item.Id)
+                                data.append("name", $("#name-@item.Id").val())
+                                data.append("price", $("#price-@item.Id").val())
+                                data.append("count", $("#count-@item.Id").val())
+                                data.append("available", $("#available-@item.Id").is(":checked").toString())
+
                                 $.ajax({
                                     method: 'POST',
                                     url: '/Home/UpdateDrink',
-                                    data: {
-                                        drink_id: @item.Id,
-                                        new_name: $("#name-@item.Id").val(),
-                                        new_price: $("#price-@item.Id").val(),
-                                        new_count: $("#count-@item.Id").val(),
-                                        new_available: $("#available-@item.Id").is(":checked")
-                                    },
+                                    data: data,
+                                    dataType: 'json',
+                                    contentType: false,
+                                    processData: false,
                                     success: function (data) {
                                         $("#update-@item.Id").removeAttr("disabled")
                                         $(".toast").toast("show")
                                     }
                                 })
-                                if ($("#image-@item.Id").prop('files')[0]) {
-                                    var image = new FormData();
-                                    image.append("file", $("#image-@item.Id").prop('files')[0])
-                                    $.ajax({
-                                        method: 'POST',
-                                        url: '/Home/UpdateDrinkImage',
-                                        data: image,
-                                        dataType: 'json',
-                                        contentType: false,
-                                        processData: false
-                                    })
-                                }
                             })
                         </script>
                     </div>
@@ -129,6 +124,7 @@
                 </div>
 
                 <button class="btn btn-warning">Добавить</button>
+
             </div>
         </div>
     </div>

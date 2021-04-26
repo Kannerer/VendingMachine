@@ -6,13 +6,13 @@ using System.Data.Entity;
 
 namespace VendingMachine.Models
 {
-    public class DrinkModelContext : DbContext
+    public class ModelContext : DbContext
     {
         public DbSet<DrinkModel> DrinkModel { get; set; }
-
+        public DbSet<CoinModel> CoinModel { get; set; }
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            Database.SetInitializer<DrinkModelContext>(null);
+            Database.SetInitializer<ModelContext>(null);
             base.OnModelCreating(modelBuilder);
         }
     }

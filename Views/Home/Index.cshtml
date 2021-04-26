@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VendingMachine.Models.DrinkModel>
+﻿
 @{
     ViewBag.Title = "Vending Machine";
 }
@@ -7,20 +7,29 @@
 
 <div class="card">
     <div class="card-body">
-        Внесено денег: 0р.
-        <button type="button" class="btn btn-primary">1 р.</button>
-        <button type="button" class="btn btn-primary">2 р.</button>
-        <button type="button" class="btn btn-primary">5 р.</button>
-        <button type="button" class="btn btn-primary">10 р.</button>
+        <p id="sum">Внесено денег: 0 р.</p>
+        @{ foreach (var item in ViewBag.Coin)
+            {
+                <button type="button" class="btn btn-primary" onclick="raise_sum(@item.Nomination)" id="@item.Nomination" disabled=@(!item.Available)>@item.Nomination р.</button>
+            }
+        }
+        <p id="change">Ваша сдача: 0 р.</p>
+        <button type="button" class="btn btn-primary" >Забрать сдачу</button>
     </div>
 </div>
-
+<script>
+    sum = 0
+    function raise_sum(value) {
+        sum += value
+        $("#sum").text(`Внесено денег: ${sum} р.`)
+    }
+</script>
 <div class="row row=cols-1 row-cols-md-3 g-4 mt-3">
-    @{ foreach (var item in Model)
+    @{ foreach (var item in ViewBag.Drink)
         {
             <div class="col mt-3">
                 <div class="card text-center" style="width: 18rem;">
-                    <img src="../images/128.png" class="card-img-top" alt="...">
+                    <img src="../images/@item.Image" class="card-img-top" alt="@item.Name">
                     <div class="card-body">
                         <h5 class="card-title">@item.Name</h5>
                         <p class="card-text" id="count-@item.Id"> Доступно: @item.Count шт.</p>
@@ -29,7 +38,8 @@
                 </div>
             </div>
             <script>
-                    $("#button-@item.Id").click(function () {
+                $("#button-@item.Id").click(function () {
+                    if (sum >= @item.Price) {
                         $.ajax({
                             method: 'POST',
                             url: '/Home/BuyDrink',
@@ -40,11 +50,27 @@
                                 } else {
                                     $("#button-@item.Id").prop('disabled', true);
                                 }
-                                $("#count-@item.Id").text(`Доступно: ${data.Count} шт.`);
+                                $("#count-@item.Id").text(`Доступно: ${data.Count} шт.`)
+                                sum = 0
+                                $("#sum").text(`Внесено денег: 0 р.`)
+                                $("#change").text(`Ваша сдача: ${sum -@item.Price} р.`)
                             }
                         })
+                    }
+                    else {
+                        $(".toast").toast("show")
+                    }
                     })
             </script>
         }
     }
+</div>
+<div style="position: absolute; bottom: 10px; left: 10px;">
+    <div class="toast align-items-center text-white bg-danger border-0" role="alert" data-delay=1000 aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                У вас недостаточно денег
+            </div>
+        </div>
+    </div>
 </div>

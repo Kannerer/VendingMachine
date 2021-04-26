@@ -134,9 +134,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\CoinModel.cs" />
-    <Compile Include="Models\CoinModelContext.cs" />
     <Compile Include="Models\DrinkModel.cs" />
-    <Compile Include="Models\DrinkModelContext.cs" />
+    <Compile Include="Models\ModelContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

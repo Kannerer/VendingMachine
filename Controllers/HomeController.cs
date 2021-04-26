@@ -10,14 +10,26 @@ namespace VendingMachine.Controllers
 {
     public class HomeController : Controller
     {
-        DrinkModelContext Context = new DrinkModelContext();
+        ModelContext Context = new ModelContext();
         public ActionResult Index()
         {
-            return View(Context.DrinkModel);
+            ViewBag.Drink = Context.DrinkModel;
+            ViewBag.Coin = Context.CoinModel;
+            if (Request.QueryString["key"] == "42")
+                return Redirect(Url.Action("AdminPanel"));
+            else 
+            return View();
         }
         public ActionResult AdminPanel()
         {
-            return View(Context.DrinkModel);
+            ViewBag.Drink = Context.DrinkModel;
+            ViewBag.Coin = Context.CoinModel;
+            return View();
+        }
+
+        public ActionResult Drinks()
+        {
+            return PartialView("_Drinks", Context.DrinkModel);
         }
 
         [HttpPost]
@@ -34,29 +46,24 @@ namespace VendingMachine.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateDrink(int drink_id, string new_name, int new_price, int new_count, bool new_available)
+        public ActionResult UpdateDrink()
         {
-            var drink = Context.DrinkModel.Where(d => d.Id == drink_id).FirstOrDefault();
+            var id = Convert.ToInt32(Request["id"]);
+            var drink = Context.DrinkModel.Where(d => d.Id == id).FirstOrDefault();
             
-            drink.Name = new_name;
-            drink.Price = new_price;
-            drink.Count = new_count;
-            drink.Available = new_available;
-
+            drink.Name = Request["name"];
+            drink.Price = Convert.ToInt32(Request["price"]);
+            drink.Count = Convert.ToInt32(Request["count"]);
+            drink.Available = Convert.ToBoolean(Request["available"]);
+            if (Request.Files.AllKeys.Length != 0)
+            {
+                HttpPostedFileBase file = Request.Files[0];
+                string fname = file.FileName;
+                fname = Path.Combine(Server.MapPath("~/Images/"), fname);
+                file.SaveAs(fname);
+            }
             Context.SaveChanges();
-            return Json(drink);
-        }
-
-        [HttpPost]
-        public ActionResult UpdateDrinkImage()
-        {
-            HttpPostedFileBase file = Request.Files[0];
-            string fname = file.FileName;
-            fname = Path.Combine(Server.MapPath("~/Images/"), fname);
-            file.SaveAs(fname);
-
-            return Json("File Uploaded Successfully!");
-
+            return Json("Drink updated successfully");
         }
 
         [HttpPost]
