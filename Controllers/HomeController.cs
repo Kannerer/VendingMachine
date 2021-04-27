@@ -63,5 +63,14 @@ namespace VendingMachine.Controllers
             Context.SaveChanges();
             return Json("Drink deleted");
         }
+
+        [HttpPost]
+        public ActionResult AddDrink(string new_name, int new_price, int new_count, bool new_available)
+        {
+            var drink = new DrinkModel { Name = new_name, Price = new_price, Count = new_count, Available = new_available };
+            Context.DrinkModel.Add(drink);
+            Context.SaveChanges();
+            return Json(drink);
+        }
     }
 }
