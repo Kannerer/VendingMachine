@@ -10,7 +10,6 @@ namespace VendingMachine.Models
     {
         [Key]
         public int Nomination { get; set; }
-        public int Count { get; set; }
         public bool Available { get; set; }
     }
 }

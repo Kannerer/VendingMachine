@@ -48,10 +48,6 @@
                             <input class="form-check-input" type="checkbox" id="available-@item.Id" checked=@item.Available>
                             <label class="form-check-label" for="available-@item.Id">Напиток доступен</label>
                         </div>
-                        <div class="input-group mb-3">
-                            <label for="input4">Изображение</label>
-                            <input type="file" id="image-@item.Id">
-                        </div>
                         <button class="btn btn-warning" id="update-@item.Id">Обновить</button>
                         <button class="btn btn-danger" id="delete-@item.Id">Удалить</button>
                         <script>
@@ -69,23 +65,17 @@
                             })
                             $("#update-@item.Id").click(function () {
                                 $("#update-@item.Id").attr("disabled", true)
-                                var data = new FormData();
-                                if ($("#image-@item.Id").prop('files')[0]) {
-                                    data.append("image", $("#image-@item.Id").prop('files')[0])
-                                }
-                                data.append("id", @item.Id)
-                                data.append("name", $("#name-@item.Id").val())
-                                data.append("price", $("#price-@item.Id").val())
-                                data.append("count", $("#count-@item.Id").val())
-                                data.append("available", $("#available-@item.Id").is(":checked").toString())
 
                                 $.ajax({
                                     method: 'POST',
                                     url: '/Home/UpdateDrink',
-                                    data: data,
-                                    dataType: 'json',
-                                    contentType: false,
-                                    processData: false,
+                                    data: {
+                                        drink_id: @item.Id,
+                                        new_name: $("#name-@item.Id").val(),
+                                        new_price: $("#price-@item.Id").val(),
+                                        new_count: $("#count-@item.Id").val(),
+                                        new_available: $("#available-@item.Id").is(":checked")
+                                    },
                                     success: function (data) {
                                         $("#update-@item.Id").removeAttr("disabled")
                                         $(".toast").toast("show")
@@ -117,10 +107,6 @@
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" checked>
                     <label class="form-check-label" for="inlineCheckbox1">Напиток доступен</label>
-                </div>
-                <div class="input-group mb-3">
-                    <label for="input4">Изображение</label>
-                    <input type="file" id="input4">
                 </div>
 
                 <button class="btn btn-warning">Добавить</button>
