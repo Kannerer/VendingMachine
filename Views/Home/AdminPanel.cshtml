@@ -15,7 +15,14 @@
                 </div>
                 <script>
                     $('#checkbox-@item.Nomination').change(function () {
-                        console.log(this.checked)
+                        $.ajax({
+                            method: 'POST',
+                            url: '/Home/UpdateCoin',
+                            data: {
+                                nomination: @item.Nomination,
+                                new_available: $("#checkbox-@item.Nomination").is(":checked")
+                            }
+                        })
                     })
                 </script>
             } 
@@ -43,84 +50,35 @@
                     <input class="form-check-input" type="checkbox" id="checkbox-available" checked>
                     <label class="form-check-label" for="inlineCheckbox1">Напиток доступен</label>
                 </div>
-
                 <button class="btn btn-warning" id="add-drink">Добавить</button>
                 <script>
                     $("#add-drink").click(function () {
-                        $.ajax({
-                            method: 'POST',
-                            url: '/Home/AddDrink',
-                            data: {
-                                new_name: $("#input-name").val(),
-                                new_price: $("#input-price").val(),
-                                new_count: $("#input-count").val(),
-                                new_available: $("#checkbox-available").is(":checked")
-                            },
-                            success: function (data) {
-                                $("#drinks").append(`<div class="col mb-3" id="card-${data.Id}">
-                                                <div class="card" style="width: 18rem;">
-                                                    <div class="card-body">
-                                                        <h5 class="card-title">Напиток ID ${data.Id}</h5>
-                                                        <div class="input-group mb-3">
-                                                            <span class="input-group-text" id="input-${data.Id - 1}">Название</span>
-                                                            <input type="text" class="form-control" id="name-${data.Id}" value=${data.Name} aria-describedby="input1" required>
-                                                        </div>
-                                                        <div class="input-group mb-3">
-                                                            <span class="input-group-text" id="input-${data.Id - 2}">Цена</span>
-                                                            <input type="number" class="form-control" id="price-${data.Id}" value=${data.Price} aria-describedby="input2" required>
-                                                        </div>
-                                                        <div class="input-group mb-3">
-                                                            <span class="input-group-text" id="input-${data.Id - 3}">Количество</span>
-                                                            <input type="number" class="form-control" id="count-${data.Id}" value=${data.Count} aria-describedby="input3" required>
-                                                        </div>
-                                                        <div class="form-check form-check-inline">
-                                                            <input class="form-check-input" type="checkbox" id="available-${data.Id}" checked=${data.Available}>
-                                                            <label class="form-check-label" for="available-${data.Id}">Напиток доступен</label>
-                                                        </div>
-                                                        <button class="btn btn-warning" id="update-${data.Id}">Обновить</button>
-                                                        <button class="btn btn-danger" id="delete-${data.Id}">Удалить</button>
-                                                        <script>
-                                                            $("#delete-${data.Id}").click(function () {
-                                                                $.ajax({
-                                                                    method: 'POST',
-                                                                    url: '/Home/DeleteDrink',
-                                                                    data: {
-                                                                        drink_id: ${data.Id}
-                                                                    },
-                                                                    beforeSend: function () {
-                                                                        return confirm("Вы действительно хотите удалить напиток?");
-                                                                    },
-                                                                    success: function (data) {
-                                                                        $("#card-${data.Id}").remove()
-                                                                    }
-                                                                })
-                                                            })
-                                                            $("#update-${data.Id}").click(function () {
-                                                                $("#update-${data.Id}").attr("disabled", true)
-
-                                                                $.ajax({
-                                                                    method: 'POST',
-                                                                    url: '/Home/UpdateDrink',
-                                                                    data: {
-                                                                        drink_id: ${data.Id},
-                                                                        new_name: $("#name-${data.Id}").val(),
-                                                                        new_price: $("#price-${data.Id}").val(),
-                                                                        new_count: $("#count-${data.Id}").val(),
-                                                                        new_available: $("#available-${data.Id}").is(":checked")
-                                                                    },
-                                                                    success: function (data) {
-                                                                        $("#update-${data.Id}").removeAttr("disabled")
-                                                                        $(".toast").toast("show")
-                                                                    }
-                                                                })
-                                                            })
-                                                    <\/script>
-                                                </div>
-                                            </div>
-                                        </div>`)
-                            }
+                        if ($("#input-name").val() != "" && $("#input-price").val() > 0 && $("#input-count").val() >= 0) {
+                            $.ajax({
+                                method: 'POST',
+                                url: '/Home/Drinks',
+                                data: {
+                                    new_name: $("#input-name").val(),
+                                    new_price: $("#input-price").val(),
+                                    new_count: $("#input-count").val(),
+                                    new_available: $("#checkbox-available").is(":checked")
+                                },
+                                success: function (data) {
+                                    $("#drinks").append(data)
+                                    $("#input-name").val("")
+                                    $("#input-price").val("")
+                                    $("#input-count").val("")
+                                },
+                                error: function (data) {
+                                    $(".toast-body").text(data.message)
+                                    $(".toast").toast("show")
+                                }
+                            })
+                        } else {
+                            $(".toast-body").text("Введены некорректные данные")
+                            $(".toast").toast("show")
+                        }
                         })
-                    })
                 </script>
             </div>
         </div>
@@ -166,23 +124,34 @@
                                 })
                             })
                             $("#update-@item.Id").click(function () {
-                                $("#update-@item.Id").attr("disabled", true)
+                                if ($("#name-@item.Id").val() != "" && $("#price-@item.Id").val() > 0 && $("#count-@item.Id").val() >= 0) {
+                                    $("#update-@item.Id").attr("disabled", true)
 
-                                $.ajax({
-                                    method: 'POST',
-                                    url: '/Home/UpdateDrink',
-                                    data: {
-                                        drink_id: @item.Id,
-                                        new_name: $("#name-@item.Id").val(),
-                                        new_price: $("#price-@item.Id").val(),
-                                        new_count: $("#count-@item.Id").val(),
-                                        new_available: $("#available-@item.Id").is(":checked")
-                                    },
-                                    success: function (data) {
-                                        $("#update-@item.Id").removeAttr("disabled")
-                                        $(".toast").toast("show")
-                                    }
-                                })
+                                    $.ajax({
+                                        method: 'POST',
+                                        url: '/Home/UpdateDrink',
+                                        data: {
+                                            drink_id: @item.Id,
+                                            new_name: $("#name-@item.Id").val(),
+                                            new_price: $("#price-@item.Id").val(),
+                                            new_count: $("#count-@item.Id").val(),
+                                            new_available: $("#available-@item.Id").is(":checked")
+                                        },
+                                        success: function (data) {
+                                            $("#update-@item.Id").removeAttr("disabled")
+                                            $(".toast-body").text("Данные успешно обновлены")
+                                            $(".toast").toast("show")
+                                        },
+                                        error: function (data) {
+                                            $(".toast-body").text(data.message)
+                                            $(".toast").toast("show")
+                                        }
+                                    })
+                                }
+                                else {
+                                    $(".toast-body").text("Введены некорректные данные")
+                                    $(".toast").toast("show")
+                                }
                             })
                         </script>
                     </div>
@@ -194,10 +163,9 @@
 </div>
 
 <div style="position: absolute; bottom: 10px; left: 10px;">
-    <div class="toast align-items-center text-white bg-primary border-0" role="alert" data-delay=500 aria-live="assertive" aria-atomic="true">
+    <div class="toast align-items-center text-white bg-primary border-0" role="alert" data-delay=700 aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
-                Данные успешно обновлены
             </div>
         </div>
     </div>

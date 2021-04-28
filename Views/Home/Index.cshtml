@@ -14,7 +14,7 @@
             }
         }
         <p id="change">Ваша сдача: 0 р.</p>
-        <button type="button" class="btn btn-primary" >Забрать сдачу</button>
+        <button type="button" class="btn btn-primary" onclick="get_change()" >Забрать сдачу</button>
     </div>
 </div>
 <script>
@@ -22,6 +22,25 @@
     function raise_sum(value) {
         sum += value
         $("#sum").text(`Внесено денег: ${sum} р.`)
+    }
+    function get_change() {
+        $.ajax({
+            method: 'POST',
+            url: '/Home/GetChange',
+            data: { change: sum },
+            success: function (data) {
+                text = `Ваша сдача: ${sum} р.:`
+                data = JSON.parse(data)
+                for (var key in data) {
+                    if (data[key] != 0) {
+                        text += ` ${data[key]} монет по ${key} р.;`
+                    }
+                }
+                $("#change").text(text)
+                $("#sum").text(`Внесено денег: 0 р.`)
+                sum = 0
+            }
+        })
     }
 </script>
 <div class="row row=cols-1 row-cols-md-3 g-4 mt-3">
@@ -42,7 +61,7 @@
                         $.ajax({
                             method: 'POST',
                             url: '/Home/BuyDrink',
-                            data: { drink_id: @item.Id },
+                            data: { drink_id: @item.Id, sum: sum },
                             success: function (data) {
                                 if (data.Available) {
                                     $("#button-@item.Id").prop('disabled', false);
@@ -50,14 +69,16 @@
                                     $("#button-@item.Id").prop('disabled', true);
                                 }
                                 $("#count-@item.Id").text(`Доступно: ${data.Count} шт.`)
-                                $("#change").text(`Ваша сдача: ${sum -@item.Price} р.`)
-                                $("#sum").text(`Внесено денег: 0 р.`)
-                                sum = 0
+                                sum -= @item.Price
+                                $("#sum").text(`Внесено денег: ${sum} р.`)
+                                $(".toast").toast("show")
+                                $(".toast-body").text("Успешная покупка")
                             }
                         })
                     }
                     else {
                         $(".toast").toast("show")
+                        $(".toast-body").text("У вас недостаточно денег")
                     }
                     })
             </script>
@@ -65,10 +86,10 @@
     }
 </div>
 <div style="position: absolute; bottom: 10px; left: 10px;">
-    <div class="toast align-items-center text-white bg-danger border-0" role="alert" data-delay=1000 aria-live="assertive" aria-atomic="true">
+    <div class="toast align-items-center text-white bg-primary border-0" role="alert" data-delay=1000 aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
             <div class="toast-body">
-                У вас недостаточно денег
+                
             </div>
         </div>
     </div>
